@@ -52,11 +52,14 @@ public class Learn1 {
         SessionCipher ALICE_CIPHER = createSessionCipher(ALICE, BOB);
         SessionCipher BOB_CIPHER = createSessionCipher(BOB, ALICE);
 
-
         CiphertextMessage MSG_TO_BOB = ALICE_CIPHER.encrypt("Hello world!!".getBytes());
 
+        byte[] ss = MSG_TO_BOB.serialize();
 
-        byte[] msg = BOB_CIPHER.decrypt(new PreKeySignalMessage(MSG_TO_BOB.serialize()));
+        PreKeySignalMessage ms1 = new PreKeySignalMessage(ss);
+        PreKeySignalMessage ms2 = new PreKeySignalMessage(ss);
+
+        byte[] msg = BOB_CIPHER.decrypt(ms1);
 
         System.out.println("-------------- encrypted -------------");
         System.out.println(new String(MSG_TO_BOB.serialize()));
@@ -75,6 +78,8 @@ public class Learn1 {
 
         SessionBuilder sessionBuilder = new SessionBuilder(protocolStore, asRemotePerson.address);
 
+        System.out.println(protocolStore.containsSession(asRemotePerson.address));
+
         PreKeyBundle preKeyBundle = new PreKeyBundle(
                 asRemotePerson.registrationId,
                 asRemotePerson.address.getDeviceId(),
@@ -87,6 +92,8 @@ public class Learn1 {
         );
 
         sessionBuilder.process(preKeyBundle);
+
+        System.out.println(protocolStore.containsSession(asRemotePerson.address));
 
         return new SessionCipher(protocolStore, asRemotePerson.address);
     }

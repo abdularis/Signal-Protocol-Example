@@ -121,6 +121,8 @@ public class Learn {
 
         SessionCipher cipher = new SessionCipher(protocolStore, sender.address);
 
+        CiphertextMessage enc = cipher.encrypt("Hi hi!!".getBytes());
+
         return cipher.decrypt(message);
     }
 }
