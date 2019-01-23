@@ -14,6 +14,7 @@ import org.whispersystems.libsignal.protocol.CiphertextMessage;
 import org.whispersystems.libsignal.protocol.PreKeySignalMessage;
 import org.whispersystems.libsignal.protocol.SignalMessage;
 import org.whispersystems.libsignal.state.PreKeyBundle;
+import org.whispersystems.libsignal.state.PreKeyRecord;
 import org.whispersystems.libsignal.state.SignalProtocolStore;
 
 import androidx.annotation.NonNull;
@@ -24,6 +25,14 @@ public class Kryptonium {
 
     public Kryptonium(@NonNull SignalProtocolStore protocolStore) {
         mSignalProtocolStore = protocolStore;
+    }
+
+    public void generateKeys() throws InvalidKeyException {
+        DeviceKeyBundle ALICE = DeviceKeyBundleUtils.generateDeviceKeyBundle("+621111_alc", 1, 1, 1);
+        for (PreKeyRecord preKeyRecord : ALICE.getPreKeys()) {
+            mSignalProtocolStore.storePreKey(preKeyRecord.getId(), preKeyRecord);
+        }
+        mSignalProtocolStore.storeSignedPreKey(ALICE.getSignedPreKey().getId(), ALICE.getSignedPreKey());
     }
 
     public void storeRemoteDeviceKeys(RemoteDeviceKeys remoteDeviceKeys)

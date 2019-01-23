@@ -13,7 +13,6 @@ import org.whispersystems.libsignal.DuplicateMessageException;
 import org.whispersystems.libsignal.InvalidKeyException;
 import org.whispersystems.libsignal.InvalidKeyIdException;
 import org.whispersystems.libsignal.InvalidMessageException;
-import org.whispersystems.libsignal.InvalidVersionException;
 import org.whispersystems.libsignal.LegacyMessageException;
 import org.whispersystems.libsignal.NoSessionException;
 import org.whispersystems.libsignal.SignalProtocolAddress;
@@ -29,9 +28,9 @@ import static org.junit.Assert.assertEquals;
 public class EncryptTest {
 
     @Test
-    public void encryptTest() throws InvalidKeyException, UntrustedIdentityException, InvalidVersionException, InvalidMessageException, DuplicateMessageException, LegacyMessageException, InvalidKeyIdException, NoSessionException {
+    public void encryptTest() throws InvalidKeyException, UntrustedIdentityException, InvalidMessageException, DuplicateMessageException, LegacyMessageException, InvalidKeyIdException, NoSessionException {
         DeviceKeyBundle ALICE = DeviceKeyBundleUtils.generateDeviceKeyBundle("+621111_alc", 1, 1, 2);
-        DeviceKeyBundle BOB = DeviceKeyBundleUtils.generateDeviceKeyBundle("+622222_bob", 1, 1, 2);
+        DeviceKeyBundle BOB = DeviceKeyBundleUtils.generateDeviceKeyBundle("+622222_bob", 1, 22, 2);
 
         InMemorySignalProtocolStore ALICE_STORE = new InMemorySignalProtocolStore(ALICE.getIdentityKeyPair(), ALICE.getRegistrationId());
         ALICE_STORE.storePreKey(ALICE.getPreKeys().get(0).getId(), ALICE.getPreKeys().get(0));
@@ -73,7 +72,7 @@ public class EncryptTest {
         //
         String ALICE_ORIG_MSG = "Hello I'm Alice";
         CiphertextMessage msg = ALICE_CRYPT.encryptFor(ALICE_ORIG_MSG.getBytes(), new SignalProtocolAddress("+622222_bob", 1));
-        Log.d("TestEncrypt", "ALICE -> BOB: type: " + msg.getType());
+        Log.d("TestEncrypt", "ALICE --to--> BOB: type: " + msg.getType());
 
         byte[] decryptMsg = BOB_CRYPT.decryptFrom(msg, new SignalProtocolAddress("+621111_alc", 1));
         assertEquals(ALICE_ORIG_MSG, new String(decryptMsg));
@@ -82,7 +81,7 @@ public class EncryptTest {
         //
         String BOB_ORIG_MSG = "Hi I'm Bob";
         CiphertextMessage msg2 = BOB_CRYPT.encryptFor(BOB_ORIG_MSG.getBytes(), new SignalProtocolAddress("+621111_alc", 1));
-        Log.d("TestEncrypt", "BOB -> ALICE: type: " + msg2.getType());
+        Log.d("TestEncrypt", "BOB --to--> ALICE: type: " + msg2.getType());
 
         byte[] decryptMsg2 = ALICE_CRYPT.decryptFrom(msg2, new SignalProtocolAddress("+622222_bob", 1));
         assertEquals(BOB_ORIG_MSG, new String(decryptMsg2));
@@ -90,7 +89,7 @@ public class EncryptTest {
 
         //
         msg = BOB_CRYPT.encryptFor("teeest".getBytes(), new SignalProtocolAddress("+621111_alc", 1));
-        Log.d("TestEncrypt", "ALICE -> BOB: type: " + msg.getType());
+        Log.d("TestEncrypt", "ALICE --to--> BOB: type: " + msg.getType());
 
         decryptMsg = ALICE_CRYPT.decryptFrom(msg, new SignalProtocolAddress("+622222_bob", 1));
         assertEquals("teeest", new String(decryptMsg));
@@ -98,7 +97,7 @@ public class EncryptTest {
 
         //
         msg = ALICE_CRYPT.encryptFor("I'm alice!!!!".getBytes(), new SignalProtocolAddress("+622222_bob", 1));
-        Log.d("TestEncrypt", "ALICE -> BOB: type: " + msg.getType());
+        Log.d("TestEncrypt", "ALICE --to--> BOB: type: " + msg.getType());
 
         decryptMsg = BOB_CRYPT.decryptFrom(msg, new SignalProtocolAddress("+621111_alc", 1));
         assertEquals("I'm alice!!!!", new String(decryptMsg));
