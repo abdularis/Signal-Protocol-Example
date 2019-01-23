@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.aar.app.signalprotocolexample.crypto.db.CryptoKeysDatabase;
 import com.aar.app.signalprotocolexample.crypto.db.LocalIdentityEntity;
+import com.aar.app.signalprotocolexample.crypto.db.LocalIdentityKeyStore;
 import com.aar.app.signalprotocolexample.crypto.db.TrustedKeyEntity;
 import com.aar.app.signalprotocolexample.crypto.db.dao.LocalIdentityDao;
 import com.aar.app.signalprotocolexample.crypto.db.dao.TrustedKeyDao;
@@ -15,7 +16,9 @@ import org.junit.runner.RunWith;
 import org.whispersystems.libsignal.IdentityKey;
 import org.whispersystems.libsignal.IdentityKeyPair;
 import org.whispersystems.libsignal.InvalidKeyException;
+import org.whispersystems.libsignal.SignalProtocolAddress;
 import org.whispersystems.libsignal.ecc.Curve;
+import org.whispersystems.libsignal.state.IdentityKeyStore;
 import org.whispersystems.libsignal.util.KeyHelper;
 
 import androidx.room.Room;
@@ -24,8 +27,10 @@ import androidx.test.runner.AndroidJUnit4;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 
 @RunWith(AndroidJUnit4.class)
@@ -34,6 +39,7 @@ public class TrustedIdentityDatabaseAndStoreTest {
     private CryptoKeysDatabase db;
     private LocalIdentityDao mLocalIdentityDao;
     private TrustedKeyDao mTrustedKeyDao;
+    private LocalIdentityKeyStore mLocalIdentityKeyStore;
 
     @Before
     public void start() {
@@ -41,6 +47,7 @@ public class TrustedIdentityDatabaseAndStoreTest {
         db = Room.inMemoryDatabaseBuilder(context, CryptoKeysDatabase.class).build();
         mLocalIdentityDao = db.getLocalIdentityDao();
         mTrustedKeyDao = db.getTrustedKeyDao();
+        mLocalIdentityKeyStore = new LocalIdentityKeyStore(mTrustedKeyDao, mLocalIdentityDao);
     }
 
     @After
@@ -101,5 +108,27 @@ public class TrustedIdentityDatabaseAndStoreTest {
         queryTrust = mTrustedKeyDao.queryByNameAndDeviceId("no", 1);
 
         assertNull(queryTrust);
+    }
+
+    @Test
+    public void localIdentityStoreTest() {
+        IdentityKey ik1 = new IdentityKey(Curve.generateKeyPair().getPublicKey());
+        SignalProtocolAddress addr1 = new SignalProtocolAddress("alice", 1);
+
+        boolean saved = mLocalIdentityKeyStore.saveIdentity(addr1, ik1);
+
+        assertTrue(saved);
+
+        IdentityKey queryIk = mLocalIdentityKeyStore.getIdentity(addr1);
+
+        assertArrayEquals(ik1.serialize(), queryIk.serialize());
+
+        boolean trusted = mLocalIdentityKeyStore.isTrustedIdentity(addr1, ik1, IdentityKeyStore.Direction.RECEIVING);
+
+        assertTrue(trusted);
+
+        trusted = mLocalIdentityKeyStore.isTrustedIdentity(new SignalProtocolAddress("bob", 1), ik1, IdentityKeyStore.Direction.RECEIVING);
+
+        assertFalse(trusted);
     }
 }
