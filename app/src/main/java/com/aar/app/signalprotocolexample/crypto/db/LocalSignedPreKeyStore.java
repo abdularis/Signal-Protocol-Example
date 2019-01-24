@@ -2,9 +2,11 @@ package com.aar.app.signalprotocolexample.crypto.db;
 
 import com.aar.app.signalprotocolexample.crypto.db.dao.SignedPreKeyDao;
 
+import org.whispersystems.libsignal.InvalidKeyIdException;
 import org.whispersystems.libsignal.state.SignedPreKeyRecord;
 import org.whispersystems.libsignal.state.SignedPreKeyStore;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,26 +21,35 @@ public class LocalSignedPreKeyStore implements SignedPreKeyStore {
     }
 
     @Override
-    public SignedPreKeyRecord loadSignedPreKey(int signedPreKeyId) {
+    public SignedPreKeyRecord loadSignedPreKey(int signedPreKeyId) throws InvalidKeyIdException {
         SignedPreKeyEntity entity = mSignedPreKeyDao.queryById(signedPreKeyId);
         if (entity != null) {
-            return entity.getSignedPreKeyRecord();
+            try {
+                return new SignedPreKeyRecord(entity.getSignedPreKeyRecord());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-        return null;
+
+        throw new InvalidKeyIdException("No such signedprekey!");
     }
 
     @Override
     public List<SignedPreKeyRecord> loadSignedPreKeys() {
         List<SignedPreKeyRecord> signedPreKeyRecords = new ArrayList<>();
         for (SignedPreKeyEntity entity : mSignedPreKeyDao.queryAll()) {
-            signedPreKeyRecords.add(entity.getSignedPreKeyRecord());
+            try {
+                signedPreKeyRecords.add(new SignedPreKeyRecord(entity.getSignedPreKeyRecord()));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         return signedPreKeyRecords;
     }
 
     @Override
     public void storeSignedPreKey(int signedPreKeyId, SignedPreKeyRecord record) {
-        mSignedPreKeyDao.insert(new SignedPreKeyEntity(signedPreKeyId, record));
+        mSignedPreKeyDao.insert(new SignedPreKeyEntity(signedPreKeyId, record.serialize()));
     }
 
     @Override

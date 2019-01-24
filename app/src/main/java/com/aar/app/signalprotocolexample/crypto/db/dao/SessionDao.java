@@ -6,6 +6,7 @@ import java.util.List;
 
 import androidx.room.Dao;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
 @Dao
@@ -17,10 +18,10 @@ public interface SessionDao {
     @Query("SELECT device_id FROM sessions WHERE address_name = :addressName AND device_id != :notEqualDeviceId")
     List<Integer> queryDeviceIds(String addressName, int notEqualDeviceId);
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     long insert(SessionEntity entity);
 
-    @Query("SELECT COUNT(id) FROM sessions WHERE address_name = :addressName AND device_id = :deviceId")
+    @Query("SELECT COUNT(*) FROM sessions WHERE address_name = :addressName AND device_id = :deviceId")
     int queryCountByAddress(String addressName, int deviceId);
 
     @Query("DELETE FROM sessions WHERE address_name = :addressName AND device_id = :deviceId")

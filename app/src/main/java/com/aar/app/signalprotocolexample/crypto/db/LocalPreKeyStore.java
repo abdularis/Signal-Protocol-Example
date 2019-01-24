@@ -6,6 +6,8 @@ import org.whispersystems.libsignal.InvalidKeyIdException;
 import org.whispersystems.libsignal.state.PreKeyRecord;
 import org.whispersystems.libsignal.state.PreKeyStore;
 
+import java.io.IOException;
+
 import androidx.annotation.NonNull;
 
 public class LocalPreKeyStore implements PreKeyStore {
@@ -19,16 +21,21 @@ public class LocalPreKeyStore implements PreKeyStore {
     @Override
     public PreKeyRecord loadPreKey(int preKeyId) throws InvalidKeyIdException {
         PreKeyEntity preKeyEntity = mPreKeyDao.queryByPreKeyId(preKeyId);
-        if (preKeyEntity == null || preKeyEntity.getPreKeyRecord() == null) {
-            throw new InvalidKeyIdException("No such prekeyrecord!");
+
+        if (preKeyEntity != null && preKeyEntity.getPreKeyRecord() != null) {
+            try {
+                return new PreKeyRecord(preKeyEntity.getPreKeyRecord());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
-        return preKeyEntity.getPreKeyRecord();
+        throw new InvalidKeyIdException("No such prekeyrecord!");
     }
 
     @Override
     public void storePreKey(int preKeyId, PreKeyRecord record) {
-        mPreKeyDao.insertPreKey(new PreKeyEntity(preKeyId, record));
+        mPreKeyDao.insertPreKey(new PreKeyEntity(preKeyId, record.serialize()));
     }
 
     @Override

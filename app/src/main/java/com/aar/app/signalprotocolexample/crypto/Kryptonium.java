@@ -1,5 +1,7 @@
 package com.aar.app.signalprotocolexample.crypto;
 
+import android.util.Log;
+
 import org.whispersystems.libsignal.DuplicateMessageException;
 import org.whispersystems.libsignal.InvalidKeyException;
 import org.whispersystems.libsignal.InvalidKeyIdException;

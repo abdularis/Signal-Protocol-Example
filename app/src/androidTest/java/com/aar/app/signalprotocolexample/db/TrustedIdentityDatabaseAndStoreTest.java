@@ -129,6 +129,6 @@ public class TrustedIdentityDatabaseAndStoreTest {
 
         trusted = mLocalIdentityKeyStore.isTrustedIdentity(new SignalProtocolAddress("bob", 1), ik1, IdentityKeyStore.Direction.RECEIVING);
 
-        assertFalse(trusted);
+        assertTrue(trusted);
     }
 }

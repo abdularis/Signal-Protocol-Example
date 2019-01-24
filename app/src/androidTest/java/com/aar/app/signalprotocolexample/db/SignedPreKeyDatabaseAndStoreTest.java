@@ -12,8 +12,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.whispersystems.libsignal.InvalidKeyException;
+import org.whispersystems.libsignal.InvalidKeyIdException;
 import org.whispersystems.libsignal.state.SignedPreKeyRecord;
 import org.whispersystems.libsignal.util.KeyHelper;
+
+import java.io.IOException;
 
 import androidx.room.Room;
 import androidx.test.InstrumentationRegistry;
@@ -45,16 +48,17 @@ public class SignedPreKeyDatabaseAndStoreTest {
     }
 
     @Test
-    public void signedPreKeyDaoTest() throws InvalidKeyException {
+    public void signedPreKeyDaoTest() throws InvalidKeyException, IOException {
         SignedPreKeyRecord spk = KeyHelper.generateSignedPreKey(KeyHelper.generateIdentityKeyPair(), 10);
-        SignedPreKeyEntity entity = new SignedPreKeyEntity(spk.getId(), spk);
+        SignedPreKeyEntity entity = new SignedPreKeyEntity(spk.getId(), spk.serialize());
 
         mSignedPreKeyDao.insert(entity);
 
         SignedPreKeyEntity qEntity = mSignedPreKeyDao.queryById(spk.getId());
+        SignedPreKeyRecord qSpk = new SignedPreKeyRecord(qEntity.getSignedPreKeyRecord());
 
-        assertEquals(entity.getSignedPreKeyRecord().getId(), qEntity.getSignedPreKeyRecord().getId());
-        assertArrayEquals(entity.getSignedPreKeyRecord().serialize(), qEntity.getSignedPreKeyRecord().serialize());
+        assertEquals(spk.getId(), qSpk.getId());
+        assertArrayEquals(spk.serialize(), qSpk.serialize());
 
         assertEquals(1, mSignedPreKeyDao.queryAll().size());
 
@@ -65,9 +69,9 @@ public class SignedPreKeyDatabaseAndStoreTest {
     }
 
     @Test
-    public void signedPreKeyStoreTest() throws InvalidKeyException {
+    public void signedPreKeyStoreTest() throws InvalidKeyException, InvalidKeyIdException {
         SignedPreKeyRecord spk = KeyHelper.generateSignedPreKey(KeyHelper.generateIdentityKeyPair(), 10);
-        SignedPreKeyEntity entity = new SignedPreKeyEntity(spk.getId(), spk);
+        SignedPreKeyEntity entity = new SignedPreKeyEntity(spk.getId(), spk.serialize());
 
         mLocalSignedPreKeyStore.storeSignedPreKey(entity.getId(), spk);
 

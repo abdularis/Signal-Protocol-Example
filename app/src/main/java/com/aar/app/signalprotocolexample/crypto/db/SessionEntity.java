@@ -1,16 +1,14 @@
 package com.aar.app.signalprotocolexample.crypto.db;
 
+import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName = "sessions")
+@Entity(tableName = "sessions", primaryKeys = {"address_name", "device_id"})
 public class SessionEntity {
 
-    @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "id")
-    private int mId;
-
+    @NonNull
     @ColumnInfo(name = "address_name")
     private String mProtocolAddressName;
 
@@ -20,17 +18,13 @@ public class SessionEntity {
     @ColumnInfo(name = "session")
     private byte[] mSession;
 
-    public SessionEntity(int id, String protocolAddressName, int deviceId, byte[] session) {
-        mId = id;
+    public SessionEntity(@NonNull String protocolAddressName, int deviceId, byte[] session) {
         mProtocolAddressName = protocolAddressName;
         mDeviceId = deviceId;
         mSession = session;
     }
 
-    public int getId() {
-        return mId;
-    }
-
+    @NonNull
     public String getProtocolAddressName() {
         return mProtocolAddressName;
     }

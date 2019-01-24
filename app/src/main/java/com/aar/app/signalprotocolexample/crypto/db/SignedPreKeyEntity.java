@@ -1,13 +1,9 @@
 package com.aar.app.signalprotocolexample.crypto.db;
 
-import com.aar.app.signalprotocolexample.crypto.db.converters.SignedPreKeyRecordConverter;
-
-import org.whispersystems.libsignal.state.SignedPreKeyRecord;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
-import androidx.room.TypeConverters;
 
 @Entity(tableName = "signed_prekeys")
 public class SignedPreKeyEntity {
@@ -17,10 +13,9 @@ public class SignedPreKeyEntity {
     private int mId;
 
     @ColumnInfo(name = "signed_prekey")
-    @TypeConverters({SignedPreKeyRecordConverter.class})
-    private SignedPreKeyRecord mSignedPreKeyRecord;
+    private byte[] mSignedPreKeyRecord;
 
-    public SignedPreKeyEntity(int id, SignedPreKeyRecord signedPreKeyRecord) {
+    public SignedPreKeyEntity(int id, byte[] signedPreKeyRecord) {
         mId = id;
         mSignedPreKeyRecord = signedPreKeyRecord;
     }
@@ -29,7 +24,7 @@ public class SignedPreKeyEntity {
         return mId;
     }
 
-    public SignedPreKeyRecord getSignedPreKeyRecord() {
+    public byte[] getSignedPreKeyRecord() {
         return mSignedPreKeyRecord;
     }
 }

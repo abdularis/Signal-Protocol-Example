@@ -50,7 +50,6 @@ public class SessionDatabaseAndStoreTest {
     public void sessionDaoTest() {
         SessionRecord sessEmpty = new SessionRecord();
         SessionEntity sessEmptyEntity = new SessionEntity(
-                0,
                 "alice", 2,
                 sessEmpty.serialize()
         );

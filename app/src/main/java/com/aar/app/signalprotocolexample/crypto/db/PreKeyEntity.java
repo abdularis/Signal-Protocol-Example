@@ -1,13 +1,9 @@
 package com.aar.app.signalprotocolexample.crypto.db;
 
-import com.aar.app.signalprotocolexample.crypto.db.converters.PreKeyRecordConverter;
-
-import org.whispersystems.libsignal.state.PreKeyRecord;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
-import androidx.room.TypeConverters;
 
 @Entity(tableName = "prekeys")
 public class PreKeyEntity {
@@ -17,10 +13,9 @@ public class PreKeyEntity {
     private int mPreKeyId;
 
     @ColumnInfo(name = "prekey")
-    @TypeConverters({PreKeyRecordConverter.class})
-    private PreKeyRecord mPreKeyRecord;
+    private byte[] mPreKeyRecord;
 
-    public PreKeyEntity(int preKeyId, PreKeyRecord preKeyRecord) {
+    public PreKeyEntity(int preKeyId, byte[] preKeyRecord) {
         mPreKeyId = preKeyId;
         mPreKeyRecord = preKeyRecord;
     }
@@ -29,7 +24,7 @@ public class PreKeyEntity {
         return mPreKeyId;
     }
 
-    public PreKeyRecord getPreKeyRecord() {
+    public byte[] getPreKeyRecord() {
         return mPreKeyRecord;
     }
 }

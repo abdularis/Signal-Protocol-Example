@@ -18,6 +18,7 @@ import org.whispersystems.libsignal.state.PreKeyRecord;
 import org.whispersystems.libsignal.util.KeyHelper;
 
 
+import java.io.IOException;
 import java.util.List;
 
 import androidx.room.Room;
@@ -57,8 +58,8 @@ public class PreKeyDatabaseAndStoreTest {
         ECKeyPair keyPair1 = Curve.generateKeyPair();
         PreKeyRecord preKeyRecord1 = new PreKeyRecord(2, keyPair1);
 
-        PreKeyEntity entity = new PreKeyEntity(preKeyRecord.getId(), preKeyRecord);
-        PreKeyEntity entity1 = new PreKeyEntity(preKeyRecord1.getId(), preKeyRecord1);
+        PreKeyEntity entity = new PreKeyEntity(preKeyRecord.getId(), preKeyRecord.serialize());
+        PreKeyEntity entity1 = new PreKeyEntity(preKeyRecord1.getId(), preKeyRecord1.serialize());
 
         prekeyDao.insertPreKey(entity);
         prekeyDao.insertPreKey(entity);
@@ -86,15 +87,15 @@ public class PreKeyDatabaseAndStoreTest {
     }
 
     @Test
-    public void allOperationTest() {
+    public void allOperationTest() throws IOException {
         ECKeyPair keyPair = Curve.generateKeyPair();
         PreKeyRecord preKeyRecord = new PreKeyRecord(1, keyPair);
 
-        PreKeyEntity entity = new PreKeyEntity(preKeyRecord.getId(), preKeyRecord);
+        PreKeyEntity entity = new PreKeyEntity(preKeyRecord.getId(), preKeyRecord.serialize());
         prekeyDao.insertPreKey(entity);
         PreKeyEntity queryEntity = prekeyDao.queryByPreKeyId(preKeyRecord.getId());
 
-        PreKeyRecord queryPreKeyRecord = queryEntity.getPreKeyRecord();
+        PreKeyRecord queryPreKeyRecord = new PreKeyRecord(queryEntity.getPreKeyRecord());
 
         assertEquals(preKeyRecord.getId(), queryEntity.getPreKeyId());
         assertEquals(preKeyRecord.getId(), queryPreKeyRecord.getId());

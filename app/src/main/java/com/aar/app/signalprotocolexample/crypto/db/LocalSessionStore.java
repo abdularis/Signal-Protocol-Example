@@ -1,5 +1,7 @@
 package com.aar.app.signalprotocolexample.crypto.db;
 
+import android.util.Log;
+
 import com.aar.app.signalprotocolexample.crypto.db.dao.SessionDao;
 
 import org.whispersystems.libsignal.SignalProtocolAddress;
@@ -39,9 +41,10 @@ public class LocalSessionStore implements SessionStore {
 
     @Override
     public void storeSession(SignalProtocolAddress address, SessionRecord record) {
-        if (containsSession(address)) return;
+        Log.d("TestEncrypt", "store session...");
+//        if (containsSession(address)) return;
+        Log.d("TestEncrypt", "\t session not exist store new one");
         mSessionDao.insert(new SessionEntity(
-                0,
                 address.getName(),
                 address.getDeviceId(),
                 record.serialize()

@@ -9,6 +9,9 @@ import org.whispersystems.libsignal.InvalidKeyException;
 import org.whispersystems.libsignal.SignalProtocolAddress;
 import org.whispersystems.libsignal.state.IdentityKeyStore;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
+
 import androidx.annotation.NonNull;
 
 public class LocalIdentityKeyStore implements IdentityKeyStore {
@@ -19,6 +22,12 @@ public class LocalIdentityKeyStore implements IdentityKeyStore {
     public LocalIdentityKeyStore(@NonNull TrustedKeyDao trustedKeyDao, @NonNull LocalIdentityDao localIdentityDao) {
         mLocalIdentityDao = localIdentityDao;
         mTrustedKeyDao = trustedKeyDao;
+    }
+
+    public void setLocalIdentity(IdentityKeyPair identityKeyPair, int registrationId) {
+        mLocalIdentityDao.setLocalIdentity(new LocalIdentityEntity(
+                0, registrationId, identityKeyPair.serialize()
+        ));
     }
 
     @Override
@@ -51,8 +60,8 @@ public class LocalIdentityKeyStore implements IdentityKeyStore {
 
     @Override
     public boolean isTrustedIdentity(SignalProtocolAddress address, IdentityKey identityKey, Direction direction) {
-        int count = mTrustedKeyDao.countByNameAndDeviceId(address.getName(), address.getDeviceId());
-        return count > 0;
+        TrustedKeyEntity entity = mTrustedKeyDao.queryByNameAndDeviceId(address.getName(), address.getDeviceId());
+        return (entity == null) || (Arrays.equals(entity.getIdentityKey(), identityKey.serialize()));
     }
 
     @Override

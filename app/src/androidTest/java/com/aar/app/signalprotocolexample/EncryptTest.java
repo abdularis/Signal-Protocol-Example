@@ -89,7 +89,7 @@ public class EncryptTest {
 
         //
         msg = BOB_CRYPT.encryptFor("teeest".getBytes(), new SignalProtocolAddress("+621111_alc", 1));
-        Log.d("TestEncrypt", "ALICE --to--> BOB: type: " + msg.getType());
+        Log.d("TestEncrypt", "BOB --to--> ALICE: type: " + msg.getType());
 
         decryptMsg = ALICE_CRYPT.decryptFrom(msg, new SignalProtocolAddress("+622222_bob", 1));
         assertEquals("teeest", new String(decryptMsg));
