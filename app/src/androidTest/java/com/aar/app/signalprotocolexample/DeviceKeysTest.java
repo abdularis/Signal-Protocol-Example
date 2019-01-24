@@ -5,6 +5,7 @@ import android.util.Log;
 import com.aar.app.signalprotocolexample.crypto.DeviceKeyBundle;
 import com.aar.app.signalprotocolexample.crypto.DeviceKeyBundleUtils;
 import com.aar.app.signalprotocolexample.crypto.RemoteDeviceKeys;
+import com.aar.app.signalprotocolexample.crypto.db.RemoteDeviceKeysUtils;
 
 import org.json.JSONException;
 import org.junit.Test;
@@ -50,11 +51,11 @@ public class DeviceKeysTest {
                 dkb.getIdentityKeyPair().getPublicKey()
         );
 
-        String keyJson1 = rdk.toJson();
+        String keyJson1 = RemoteDeviceKeysUtils.toJson(rdk);
 
         assertNotNull(keyJson1);
 
-        RemoteDeviceKeys rdk2 = RemoteDeviceKeys.fromJson(keyJson1);
+        RemoteDeviceKeys rdk2 = RemoteDeviceKeysUtils.fromJson(keyJson1);
 
         assertNotNull(rdk2);
         assertEquals(rdk.getRegistrationId(), rdk2.getRegistrationId());
@@ -66,7 +67,7 @@ public class DeviceKeysTest {
         assertArrayEquals(rdk.getSignedPreKeySignature(), rdk2.getSignedPreKeySignature());
         assertEquals(rdk.getIdentityKey(), rdk2.getIdentityKey());
 
-        String keyJson2 = rdk2.toJson();
+        String keyJson2 = RemoteDeviceKeysUtils.toJson(rdk2);
 
         assertNotNull(keyJson2);
         assertEquals(keyJson1, keyJson2);
