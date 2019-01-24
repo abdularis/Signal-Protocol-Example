@@ -5,14 +5,12 @@ import android.util.Log;
 import com.aar.app.signalprotocolexample.crypto.DeviceKeyBundle;
 import com.aar.app.signalprotocolexample.crypto.DeviceKeyBundleUtils;
 import com.aar.app.signalprotocolexample.crypto.RemoteDeviceKeys;
-import com.aar.app.signalprotocolexample.crypto.db.RemoteDeviceKeysUtils;
+import com.aar.app.signalprotocolexample.crypto.RemoteDeviceKeysUtils;
 
 import org.json.JSONException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.whispersystems.libsignal.InvalidKeyException;
-
-import java.io.IOException;
 
 import androidx.test.runner.AndroidJUnit4;
 

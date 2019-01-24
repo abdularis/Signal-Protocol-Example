@@ -1,4 +1,4 @@
-package com.aar.app.signalprotocolexample.crypto.db;
+package com.aar.app.signalprotocolexample.crypto;
 
 import android.util.Base64;
 
